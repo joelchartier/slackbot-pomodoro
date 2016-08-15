@@ -88,11 +88,10 @@ public class PomodoroCommandManager {
         stringBuilder.append("Hello ");
         stringBuilder.append(username);
         stringBuilder.append("\n");
-        stringBuilder.append("Here are the available commands\n");
-        stringBuilder.append("- start pomodoro ${TIME_IN_MINUTES}\n");
-        stringBuilder.append("-- TIMES_IN_MINUTES must be a value between '1' and '999'\n");
-        stringBuilder.append("- stop pomodoro");
-        stringBuilder.append("- help");
+        stringBuilder.append("Here are the available commands \n");
+        stringBuilder.append("• `start pomodoro <time_in_minutes>` starts a new pomodoro (between 1 and 999 minutes)} \n");
+        stringBuilder.append("• `stop pomodoro` stops the pomodoro \n");
+        stringBuilder.append("• `help` displays this message");
 
         return stringBuilder.toString();
     }
