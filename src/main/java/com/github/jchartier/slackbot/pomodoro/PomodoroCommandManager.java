@@ -1,7 +1,9 @@
 package com.github.jchartier.slackbot.pomodoro;
 
 import com.github.jchartier.slackbot.pomodoro.service.PomodoroNotificationService;
+import com.github.jchartier.slackbot.pomodoro.service.PomodoroService;
 import com.ullink.slack.simpleslackapi.SlackChannel;
+import com.ullink.slack.simpleslackapi.SlackPersona;
 import com.ullink.slack.simpleslackapi.SlackSession;
 import com.ullink.slack.simpleslackapi.SlackUser;
 import com.ullink.slack.simpleslackapi.events.SlackMessagePosted;
@@ -10,8 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Component
 public class PomodoroCommandManager {
@@ -23,6 +27,9 @@ public class PomodoroCommandManager {
 
     @Autowired
     private PomodoroNotificationService pomodoroNotificationService;
+
+    @Autowired
+    private PomodoroService pomodoroService;
 
     @PostConstruct
     public void register() {
@@ -49,6 +56,12 @@ public class PomodoroCommandManager {
                 return;
             }
 
+            if (isListCommand(message)) {
+
+                listActivePomodoro(slackUser);
+                return;
+            }
+
             slackSession.sendMessageToUser(slackUser, buildCommandHelperValue(slackUser.getRealName()), null);
         };
 
@@ -65,6 +78,11 @@ public class PomodoroCommandManager {
         return message.equalsIgnoreCase("stop pomodoro");
     }
 
+    private boolean isListCommand(String message) {
+
+        return message.equalsIgnoreCase("list");
+    }
+
     private void startPomodoro(String message, SlackUser slackUser) {
 
         Integer delay = getNotificationDelay(message);
@@ -74,6 +92,32 @@ public class PomodoroCommandManager {
     private void stopPomodoro(SlackUser slackUser) {
 
         pomodoroNotificationService.stopPomodoro(slackUser);
+    }
+
+    private void listActivePomodoro(SlackUser slackUser) {
+
+        List<SlackUser> activeUsers = listActivePomodoros();
+
+        if (activeUsers.isEmpty()) {
+
+            slackSession.sendMessageToUser(slackUser, "No active pomodoro found", null);
+        } else {
+
+            String message = listActivePomodoros().stream()
+                    .map(SlackPersona::getRealName)
+                    .reduce("", (result, name) -> (result + "- " + name + "\n"));
+
+            slackSession.sendMessageToUser(slackUser, message, null);
+        }
+    }
+
+    private List<SlackUser> listActivePomodoros() {
+
+        List<String> userNames = pomodoroService.list();
+
+        return slackSession.getUsers().stream()
+                .filter(slackUser -> userNames.contains(slackUser.getUserName()))
+                .collect(Collectors.toList());
     }
 
     private Integer getNotificationDelay(String s) {
@@ -91,6 +135,7 @@ public class PomodoroCommandManager {
         stringBuilder.append("Here are the available commands \n");
         stringBuilder.append("• `start pomodoro <time_in_minutes>` starts a new pomodoro (between 1 and 999 minutes)} \n");
         stringBuilder.append("• `stop pomodoro` stops the pomodoro \n");
+        stringBuilder.append("• `list` list all users having an active pomodoro \n");
         stringBuilder.append("• `help` displays this message");
 
         return stringBuilder.toString();
