@@ -1,5 +1,6 @@
 package com.github.jchartier.slackbot.pomodoro;
 
+import com.github.jchartier.slackbot.pomodoro.dto.Pomodoro;
 import com.github.jchartier.slackbot.pomodoro.service.PomodoroNotificationService;
 import com.github.jchartier.slackbot.pomodoro.service.PomodoroService;
 import com.ullink.slack.simpleslackapi.SlackChannel;
@@ -86,7 +87,7 @@ public class PomodoroCommandManager {
     private void startPomodoro(String message, SlackUser slackUser) {
 
         Integer delay = getNotificationDelay(message);
-        pomodoroNotificationService.startPomodoro(slackUser.getUserName(), delay.longValue(), TimeUnit.SECONDS);
+        pomodoroNotificationService.startPomodoro(slackUser.getUserName(), delay.longValue(), TimeUnit.MINUTES);
     }
 
     private void stopPomodoro(SlackUser slackUser) {
@@ -96,28 +97,38 @@ public class PomodoroCommandManager {
 
     private void listActivePomodoro(SlackUser slackUser) {
 
-        List<SlackUser> activeUsers = listActivePomodoros();
+        List<Pomodoro> activePomodoros = listActivePomodoros();
 
-        if (activeUsers.isEmpty()) {
+        if (activePomodoros.isEmpty()) {
 
             slackSession.sendMessageToUser(slackUser, "No active pomodoro found", null);
         } else {
 
-            String message = listActivePomodoros().stream()
-                    .map(SlackPersona::getRealName)
+            String message = activePomodoros.stream()
+                    .map(pomodoro -> (pomodoro.getUsername() + ", with " + pomodoro.getCurrentDelay() + " minutes remaining."))
                     .reduce("", (result, name) -> (result + "- " + name + "\n"));
 
             slackSession.sendMessageToUser(slackUser, message, null);
         }
     }
 
-    private List<SlackUser> listActivePomodoros() {
+    private List<Pomodoro> listActivePomodoros() {
 
-        List<String> userNames = pomodoroService.list();
+        List<Pomodoro> pomodoros = pomodoroService.list();
+        List<SlackUser> slackUsers = (List<SlackUser>) slackSession.getUsers();
 
-        return slackSession.getUsers().stream()
-                .filter(slackUser -> userNames.contains(slackUser.getUserName()))
+        return pomodoros.stream()
+                .filter(activePomodoro -> isValidUsername(slackUsers, activePomodoro))
                 .collect(Collectors.toList());
+    }
+
+    private boolean isValidUsername(List<SlackUser> activeUsers,
+                                    Pomodoro activePomodoro) {
+
+        return activeUsers.stream()
+                .filter(activeUser -> activeUser.getUserName().equals(activePomodoro.getUsername()))
+                .findFirst()
+                .isPresent();
     }
 
     private Integer getNotificationDelay(String s) {
