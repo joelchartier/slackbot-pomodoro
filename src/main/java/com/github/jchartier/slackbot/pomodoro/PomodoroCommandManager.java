@@ -73,8 +73,6 @@ public class PomodoroCommandManager {
 
     private void stopPomodoro(SlackUser slackUser) {
 
-
-
         pomodoroNotificationService.stopPomodoro(slackUser);
     }
 
