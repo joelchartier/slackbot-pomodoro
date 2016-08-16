@@ -2,6 +2,7 @@ package com.github.jchartier.slackbot.pomodoro.service;
 
 import com.github.jchartier.slackbot.pomodoro.dto.Pomodoro;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
@@ -19,14 +20,6 @@ public class PomodoroService {
     @Autowired
     private StringRedisTemplate template;
 
-    private ValueOperations<String, String> ops;
-
-    @PostConstruct
-    public void init() {
-
-         ops = template.opsForValue();
-    }
-
     public void create(String username, long delay, TimeUnit timeUnit) {
 
         template.opsForValue().set(username, "", delay, timeUnit);
@@ -34,7 +27,7 @@ public class PomodoroService {
 
     public List<Pomodoro> list() {
 
-        List<String> userNames = new ArrayList<>(ops.getOperations().keys("*"));
+        List<String> userNames = new ArrayList<>(getRedisOperations().keys("*"));
 
         return userNames.stream()
                 .map(userName -> new Pomodoro(userName, getDelay(userName)))
@@ -48,6 +41,11 @@ public class PomodoroService {
 
     private long getDelay(String username) {
 
-        return ops.getOperations().getExpire(username, TimeUnit.MINUTES);
+        return getRedisOperations().getExpire(username, TimeUnit.MINUTES);
+    }
+
+    private RedisOperations<String, String> getRedisOperations() {
+
+        return template.opsForValue().getOperations();
     }
 }
