@@ -1,10 +1,9 @@
 package com.github.jchartier.slackbot.pomodoro;
 
-import com.github.jchartier.slackbot.pomodoro.dto.Pomodoro;
+import com.github.jchartier.slackbot.pomodoro.model.Pomodoro;
 import com.github.jchartier.slackbot.pomodoro.service.PomodoroNotificationService;
 import com.github.jchartier.slackbot.pomodoro.service.PomodoroService;
 import com.ullink.slack.simpleslackapi.SlackChannel;
-import com.ullink.slack.simpleslackapi.SlackPersona;
 import com.ullink.slack.simpleslackapi.SlackSession;
 import com.ullink.slack.simpleslackapi.SlackUser;
 import com.ullink.slack.simpleslackapi.events.SlackMessagePosted;
