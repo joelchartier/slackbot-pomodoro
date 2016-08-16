@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 public class PomodoroCommandManager {
 
     private static final Pattern startPattern = Pattern.compile("start pomodoro [0-9]{1,3}", Pattern.CASE_INSENSITIVE);
+    private static final String DOT = "•";
 
     @Autowired
     private SlackSession slackSession;
@@ -59,7 +60,7 @@ public class PomodoroCommandManager {
 
             if (isListCommand(message)) {
 
-                listActivePomodoro(slackUser);
+                listActivePomodoros(slackUser);
                 return;
             }
 
@@ -95,7 +96,7 @@ public class PomodoroCommandManager {
         pomodoroNotificationService.stopPomodoro(slackUser);
     }
 
-    private void listActivePomodoro(SlackUser slackUser) {
+    private void listActivePomodoros(SlackUser slackUser) {
 
         List<Pomodoro> activePomodoros = listActivePomodoros();
 
@@ -106,7 +107,7 @@ public class PomodoroCommandManager {
 
             String message = activePomodoros.stream()
                     .map(pomodoro -> (pomodoro.getUsername() + ", with " + pomodoro.getCurrentDelay() + " minutes remaining."))
-                    .reduce("", (result, name) -> (result + "- " + name + "\n"));
+                    .reduce("", (result, name) -> (String.format("%s%s %s\n", result, DOT, name)));
 
             slackSession.sendMessageToUser(slackUser, message, null);
         }
@@ -144,10 +145,14 @@ public class PomodoroCommandManager {
         stringBuilder.append(username);
         stringBuilder.append("\n");
         stringBuilder.append("Here are the available commands \n");
-        stringBuilder.append("• `start pomodoro <time_in_minutes>` starts a new pomodoro (between 1 and 999 minutes)} \n");
-        stringBuilder.append("• `stop pomodoro` stops the pomodoro \n");
-        stringBuilder.append("• `list` list all users having an active pomodoro \n");
-        stringBuilder.append("• `help` displays this message");
+        stringBuilder.append(DOT);
+        stringBuilder.append(" `start pomodoro <time_in_minutes>` starts a new pomodoro (between 1 and 999 minutes)} \n");
+        stringBuilder.append(DOT);
+        stringBuilder.append(" `stop pomodoro` stops the pomodoro \n");
+        stringBuilder.append(DOT);
+        stringBuilder.append(" `list` list all users having an active pomodoro \n");
+        stringBuilder.append(DOT);
+        stringBuilder.append(" `help` displays this message");
 
         return stringBuilder.toString();
     }

@@ -29,7 +29,7 @@ public class PomodoroService {
 
     public void create(String username, long delay, TimeUnit timeUnit) {
 
-        ops.set(username, "", delay, timeUnit);
+        template.opsForValue().set(username, "", delay, timeUnit);
     }
 
     public List<Pomodoro> list() {
