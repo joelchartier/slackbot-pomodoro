@@ -36,7 +36,13 @@ public class PomodoroNotificationService {
 
     public void stopPomodoro(SlackUser slackUser) {
 
-        template.delete(slackUser.getUserName());
-        slackSession.sendMessageToUser(slackUser, "You pomodoro has been stopped", null);
+        String userName = slackUser.getUserName();
+
+        if(template.keys(userName).isEmpty()) {
+            slackSession.sendMessageToUser(slackUser, "You don't have any pomodoro running", null);
+        } else {
+            template.delete(userName);
+            slackSession.sendMessageToUser(slackUser, "You pomodoro has been stopped", null);
+        }
     }
 }
