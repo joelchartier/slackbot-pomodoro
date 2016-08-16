@@ -18,14 +18,12 @@ public class PomodoroService {
 
     public void create(String username, long delay, TimeUnit timeUnit) {
 
-        ValueOperations<String, String> ops = template.opsForValue();
-        ops.set(username, "", delay, timeUnit);
+        template.opsForValue().set(username, "", delay, timeUnit);
     }
 
     public List<String> list() {
 
-        ValueOperations<String, String> ops = template.opsForValue();
-        Set<String> keys = ops.getOperations().keys("*");
+        Set<String> keys = template.opsForValue().getOperations().keys("*");
 
         return new ArrayList<>(keys);
     }
