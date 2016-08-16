@@ -1,14 +1,15 @@
 package com.github.jchartier.slackbot.pomodoro.service;
 
+import com.github.jchartier.slackbot.pomodoro.model.Pomodoro;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Component
 public class PomodoroService {
@@ -21,15 +22,27 @@ public class PomodoroService {
         template.opsForValue().set(username, "", delay, timeUnit);
     }
 
-    public List<String> list() {
+    public List<Pomodoro> list() {
 
-        Set<String> keys = template.opsForValue().getOperations().keys("*");
+        List<String> userNames = new ArrayList<>(getRedisOperations().keys("*"));
 
-        return new ArrayList<>(keys);
+        return userNames.stream()
+                .map(userName -> new Pomodoro(userName, getDelay(userName)))
+                .collect(Collectors.toList());
     }
 
     public void delete(String username) {
 
         template.delete(username);
+    }
+
+    private long getDelay(String username) {
+
+        return getRedisOperations().getExpire(username, TimeUnit.MINUTES);
+    }
+
+    private RedisOperations<String, String> getRedisOperations() {
+
+        return template.opsForValue().getOperations();
     }
 }
