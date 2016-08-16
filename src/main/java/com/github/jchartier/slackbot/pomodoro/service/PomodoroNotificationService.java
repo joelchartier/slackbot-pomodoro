@@ -27,7 +27,7 @@ public class PomodoroNotificationService {
     public void stopPomodoro(SlackUser slackUser) {
 
         pomodoroService.delete(slackUser.getUserName());
-        slackSession.sendMessageToUser(slackUser, "You pomodoro has been stopped", null);
+        slackSession.sendMessageToUser(slackUser, "You pomodoro was stopped", null);
     }
 
     private String getStartPomodoroMessage(String username, long delay, TimeUnit timeUnit) {
