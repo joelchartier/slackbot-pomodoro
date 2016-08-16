@@ -1,16 +1,13 @@
 package com.github.jchartier.slackbot.pomodoro.service;
 
-import com.github.jchartier.slackbot.pomodoro.dto.Pomodoro;
+import com.github.jchartier.slackbot.pomodoro.model.Pomodoro;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 

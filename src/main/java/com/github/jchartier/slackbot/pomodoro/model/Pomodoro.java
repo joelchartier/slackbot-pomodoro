@@ -1,4 +1,4 @@
-package com.github.jchartier.slackbot.pomodoro.dto;
+package com.github.jchartier.slackbot.pomodoro.model;
 
 public class Pomodoro {
 
