@@ -58,7 +58,7 @@ public class PomodoroCommandManager {
 
             if (isListCommand(message)) {
 
-                listActivePomodoro(slackUser);
+                listActivePomodoros(slackUser);
                 return;
             }
 
@@ -94,7 +94,7 @@ public class PomodoroCommandManager {
         pomodoroNotificationService.stopPomodoro(slackUser);
     }
 
-    private void listActivePomodoro(SlackUser slackUser) {
+    private void listActivePomodoros(SlackUser slackUser) {
 
         List<SlackUser> activeUsers = listActivePomodoros();
 
