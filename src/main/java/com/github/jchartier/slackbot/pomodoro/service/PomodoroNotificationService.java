@@ -28,15 +28,21 @@ public class PomodoroNotificationService {
 
     private String getStartPomodoroMessage(String username, long delay, TimeUnit timeUnit) {
 
-        return String.format("%s, " +
-                "your pomodoro of %s %s has been started.\n" +
-                "You will be notified when it's completed.\n" +
-                "You can also stop your pomodoro by using the command 'stop pomodoro'", username, delay, timeUnit.toString());
+        return String.format(" >>> %s, I started your pomodoro! \n" +
+                        " Type `help` if you need anything. \n" +
+                        " *Have a productive %s %s!*" ,
+                username, delay, timeUnit.toString());
     }
 
     public void stopPomodoro(SlackUser slackUser) {
 
-        template.delete(slackUser.getUserName());
-        slackSession.sendMessageToUser(slackUser, "You pomodoro has been stopped", null);
+        String userName = slackUser.getUserName();
+
+        if(template.keys(userName).isEmpty()) {
+            slackSession.sendMessageToUser(slackUser, ">>> You don't have any pomodoro running", null);
+        } else {
+            template.delete(userName);
+            slackSession.sendMessageToUser(slackUser, ">>> Your pomodoro was stopped", null);
+        }
     }
 }
