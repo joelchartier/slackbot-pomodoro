@@ -4,6 +4,7 @@ This is a SlackBot allowing users to use the Pomodoro Technique.
 ## Currently available commands
 - `start pomodoro <time_in_minutes>` starts a pomodoro
 - `stop pomodoro` stops a pomodoro
+- `list` lists active users pomodoros
 - `help` displays help
 
 ## Configuration
