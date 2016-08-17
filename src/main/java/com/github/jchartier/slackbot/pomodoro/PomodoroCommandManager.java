@@ -101,7 +101,7 @@ public class PomodoroCommandManager {
 
         if (activePomodoros.isEmpty()) {
 
-            slackSession.sendMessageToUser(slackUser, "No active pomodoro found", null);
+            slackSession.sendMessageToUser(slackUser, ">>> No active pomodoro found", null);
         } else {
 
             String message = activePomodoros.stream()
@@ -149,7 +149,7 @@ public class PomodoroCommandManager {
         stringBuilder.append(DOT);
         stringBuilder.append(" `stop pomodoro` stops the pomodoro \n");
         stringBuilder.append(DOT);
-        stringBuilder.append(" `list` list all users having an active pomodoro \n");
+        stringBuilder.append(" `list` list all active pomodoros \n");
         stringBuilder.append(DOT);
         stringBuilder.append(" `help` displays this message");
 

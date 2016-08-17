@@ -36,6 +36,11 @@ public class PomodoroService {
         template.delete(username);
     }
 
+    public boolean pomodoroExists(String username) {
+
+        return template.opsForValue().get(username) != null;
+    }
+
     private long getDelay(String username) {
 
         return getRedisOperations().getExpire(username, TimeUnit.MINUTES);
