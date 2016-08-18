@@ -10,12 +10,8 @@ import com.ullink.slack.simpleslackapi.SlackSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.regex.Pattern;
-
 @Component
 public class PomodoroCommandFactory {
-
-    private static final Pattern startPattern = Pattern.compile("start pomodoro [0-9]{1,3}", Pattern.CASE_INSENSITIVE);
 
     @Autowired
     private SlackSession slackSession;
@@ -48,7 +44,7 @@ public class PomodoroCommandFactory {
 
     private boolean isStartCommand(String message) {
 
-        return startPattern.matcher(message).find();
+        return message.toLowerCase().startsWith("start pomodoro");
     }
 
     private boolean isStopCommand(String message) {
