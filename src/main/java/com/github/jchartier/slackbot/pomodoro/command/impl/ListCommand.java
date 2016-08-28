@@ -5,23 +5,23 @@ import com.github.jchartier.slackbot.pomodoro.model.Pomodoro;
 import com.github.jchartier.slackbot.pomodoro.service.PomodoroService;
 import com.ullink.slack.simpleslackapi.SlackSession;
 import com.ullink.slack.simpleslackapi.SlackUser;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class ListCommand implements PomodoroCommand {
 
-    // TODO: Centralized this character
-    private static final String DOT = "•";
-
     private SlackSession slackSession;
     private PomodoroService pomodoroService;
+    private MessageSource messageSource;
 
-    public ListCommand(SlackSession slackSession, PomodoroService pomodoroService) {
+    public ListCommand(SlackSession slackSession, PomodoroService pomodoroService, MessageSource messageSource) {
 
         this.slackSession = slackSession;
         this.pomodoroService = pomodoroService;
+        this.messageSource = messageSource;
     }
 
     @Override
@@ -31,7 +31,9 @@ public class ListCommand implements PomodoroCommand {
 
         if (activePomodoros.isEmpty()) {
 
-            slackSession.sendMessageToUser(slackUser, ">>> No active pomodoro found", null);
+            slackSession.sendMessageToUser(slackUser,
+                    messageSource.getMessage("pomodoro.none.active", null, Locale.ENGLISH),
+                    null);
         } else {
 
             slackSession.sendMessageToUser(slackUser, getMessageToSend(activePomodoros), null);
@@ -41,8 +43,8 @@ public class ListCommand implements PomodoroCommand {
     private String getMessageToSend(List<Pomodoro> activePomodoros) {
 
         return activePomodoros.stream()
-                        .map(pomodoro -> (pomodoro.getUsername() + ", with " + pomodoro.getCurrentDelay() + " minutes remaining."))
-                        .reduce("", (result, name) -> (String.format("%s%s %s\n", result, DOT, name)));
+                        .map(pomodoro -> messageSource.getMessage("command.list", new Object[] {pomodoro.getUsername()}, Locale.ENGLISH))
+                        .reduce("", (result, name) -> (String.format("%s %s\n", result, name)));
     }
 
     private List<Pomodoro> listActivePomodoros() {

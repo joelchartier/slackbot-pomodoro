@@ -8,6 +8,7 @@ import com.github.jchartier.slackbot.pomodoro.service.PomodoroNotificationServic
 import com.github.jchartier.slackbot.pomodoro.service.PomodoroService;
 import com.ullink.slack.simpleslackapi.SlackSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,6 +16,9 @@ public class PomodoroCommandFactory {
 
     @Autowired
     private SlackSession slackSession;
+
+    @Autowired
+    private MessageSource messageSource;
 
     @Autowired
     private PomodoroService pomodoroService;
@@ -36,10 +40,10 @@ public class PomodoroCommandFactory {
 
         if (isListCommand(message)) {
 
-            return new ListCommand(slackSession, pomodoroService);
+            return new ListCommand(slackSession, pomodoroService, messageSource);
         }
 
-        return new HelpCommand(slackSession);
+        return new HelpCommand(slackSession, messageSource);
     }
 
     private boolean isStartCommand(String message) {
