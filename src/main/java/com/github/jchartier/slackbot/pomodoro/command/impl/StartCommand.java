@@ -1,6 +1,8 @@
 package com.github.jchartier.slackbot.pomodoro.command.impl;
 
 import com.github.jchartier.slackbot.pomodoro.command.PomodoroCommand;
+import com.github.jchartier.slackbot.pomodoro.exception.GenericCommandException;
+import com.github.jchartier.slackbot.pomodoro.exception.InvalidStartDelayException;
 import com.github.jchartier.slackbot.pomodoro.service.PomodoroNotificationService;
 import com.ullink.slack.simpleslackapi.SlackUser;
 
@@ -16,14 +18,20 @@ public class StartCommand implements PomodoroCommand {
     }
 
     @Override
-    public void execute(SlackUser slackUser, String message) {
+    public void execute(SlackUser slackUser, String message) throws GenericCommandException {
 
         Integer delay = getNotificationDelay(message);
         pomodoroNotificationService.startPomodoro(slackUser.getUserName(), delay.longValue(), TimeUnit.MINUTES);
     }
 
-    private Integer getNotificationDelay(String message) {
+    private Integer getNotificationDelay(String message) throws InvalidStartDelayException {
 
-        return Integer.valueOf(message.split("\\s")[2]);
+        try {
+
+            return Integer.valueOf(message.split("\\s")[2]);
+        } catch (Exception e) {
+
+            throw new InvalidStartDelayException();
+        }
     }
 }

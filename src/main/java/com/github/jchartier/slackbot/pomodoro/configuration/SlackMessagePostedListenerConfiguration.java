@@ -1,6 +1,7 @@
 package com.github.jchartier.slackbot.pomodoro.configuration;
 
 import com.github.jchartier.slackbot.pomodoro.command.PomodoroCommandFactory;
+import com.github.jchartier.slackbot.pomodoro.exception.GenericCommandException;
 import com.ullink.slack.simpleslackapi.SlackChannel;
 import com.ullink.slack.simpleslackapi.SlackSession;
 import com.ullink.slack.simpleslackapi.SlackUser;
@@ -38,8 +39,14 @@ public class SlackMessagePostedListenerConfiguration {
                 String message = event.getMessageContent();
                 SlackUser slackUser = event.getSender();
 
+            try {
+
                 pomodoroCommandFactory.getCommand(message)
                         .execute(slackUser, message);
+            } catch (GenericCommandException e) {
+
+                // TODO We need to send the content of the error + the content of the help command
+            }
             };
     }
 
