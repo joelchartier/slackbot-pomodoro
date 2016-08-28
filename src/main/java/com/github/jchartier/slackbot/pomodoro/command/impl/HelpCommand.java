@@ -3,17 +3,19 @@ package com.github.jchartier.slackbot.pomodoro.command.impl;
 import com.github.jchartier.slackbot.pomodoro.command.PomodoroCommand;
 import com.ullink.slack.simpleslackapi.SlackSession;
 import com.ullink.slack.simpleslackapi.SlackUser;
+import org.springframework.context.MessageSource;
+
+import java.util.Locale;
 
 public class HelpCommand implements PomodoroCommand {
 
-    // TODO: Centralized this character
-    private static final String DOT = "•";
-
     private SlackSession slackSession;
+    private MessageSource messageSource;
 
-    public HelpCommand(SlackSession slackSession) {
+    public HelpCommand(SlackSession slackSession, MessageSource messageSource) {
 
         this.slackSession = slackSession;
+        this.messageSource = messageSource;
     }
 
     @Override
@@ -24,21 +26,15 @@ public class HelpCommand implements PomodoroCommand {
 
     private String buildCommandHelperValue(String username) {
 
-        StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("Hello ");
-        stringBuilder.append(username);
-        stringBuilder.append("\n");
-        stringBuilder.append("Here are the available commands \n");
-        stringBuilder.append(DOT);
-        stringBuilder.append(" `start pomodoro <time_in_minutes>` starts a new pomodoro (between 1 and 999 minutes)} \n");
-        stringBuilder.append(DOT);
-        stringBuilder.append(" `stop pomodoro` stops the pomodoro \n");
-        stringBuilder.append(DOT);
-        stringBuilder.append(" `list` list all active pomodoros \n");
-        stringBuilder.append(DOT);
-        stringBuilder.append(" `help` displays this message");
-
-        return stringBuilder.toString();
+        return messageSource.getMessage("command.help", new Object[]{username}, Locale.ENGLISH) +
+                System.lineSeparator() +
+                messageSource.getMessage("command.help.start", null, Locale.ENGLISH) +
+                System.lineSeparator() +
+                messageSource.getMessage("command.help.stop", null, Locale.ENGLISH) +
+                System.lineSeparator() +
+                messageSource.getMessage("command.help.list", null, Locale.ENGLISH) +
+                System.lineSeparator() +
+                messageSource.getMessage("command.help.help", null, Locale.ENGLISH);
     }
 }
