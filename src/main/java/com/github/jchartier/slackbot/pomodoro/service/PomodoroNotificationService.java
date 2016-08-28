@@ -44,7 +44,7 @@ public class PomodoroNotificationService {
 
             pomodoroService.delete(userName);
             slackSession.sendMessageToUser(slackUser,
-                    messageSource.getMessage("pomodoro.stop", null, Locale.ENGLISH), null);
+                    messageSource.getMessage("command.stop", null, Locale.ENGLISH), null);
         }
     }
 }

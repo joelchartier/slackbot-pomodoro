@@ -43,7 +43,7 @@ public class ListCommand implements PomodoroCommand {
     private String getMessageToSend(List<Pomodoro> activePomodoros) {
 
         return activePomodoros.stream()
-                        .map(pomodoro -> messageSource.getMessage("command.list", new Object[] {pomodoro.getUsername()}, Locale.ENGLISH))
+                        .map(pomodoro -> messageSource.getMessage("command.list", new Object[] {pomodoro.getUsername(), pomodoro.getCurrentDelay()}, Locale.ENGLISH))
                         .reduce("", (result, name) -> (String.format("%s %s\n", result, name)));
     }
 
